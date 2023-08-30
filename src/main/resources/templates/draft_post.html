@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DrafedPost List</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin: 20px;
+        }
+
+        .sidebar {
+            width: 25%;
+            padding: 20px;
+            background-color: #f0f0f0;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-container {
+            width: 70%;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styling for buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        /* Styling for forms */
+        form {
+            margin-top: 15px;
+        }
+
+        input[type="search"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Styling for pagination */
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Styling for the "Back to Home" button */
+        .mt-3 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<div th:each="post : ${posts}" class="post-box">
+    <h2 class="post-title"><a th:href="@{/showPost(postId=${post.id})}" th:text="${post.title}"></a></h2>
+    <p class="post-excerpt" th:text="${post.excerpt}"></p>
+    <p class="post-author">Author: <span th:text="${post.author}"></span></p>
+    <p class="post-publishedAt">Published At: <span th:text="${post.publishedAt}"></span></p>
+</div>
+</body>
+
+</html>

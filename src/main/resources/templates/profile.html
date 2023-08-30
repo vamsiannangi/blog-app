@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Profile</title>
+    <!-- Your CSS and other head content here -->
+</head>
+<body>
+<div class="container mt-5">
+    <h2>User Profile</h2>
+    <div>
+        <h3>Welcome, <span th:text="${user.name}"></span>!</h3>
+        <p>Email: <span th:text="${user.email}"></span></p>
+    </div>
+    <hr>
+    <h3>Your Posts:</h3>
+    <div th:if="${myPosts.size() > 0}">
+        <ul>
+            <li th:each="post : ${myPosts}">
+                <h2 class="post-title"><a style="color:black;" th:href="@{/showPost(postId=${post.id})}" th:text="${post.title}"></a></h2>
+
+<!--                <h4 th:text="${post.title}"></h4>-->
+                <p th:text="${post.content}"></p>
+            </li>
+        </ul>
+    </div>
+    <div th:unless="${myPosts.size() > 0}">
+        <p>You haven't posted anything yet.</p>
+    </div>
+</div>
+</body>
+</html>

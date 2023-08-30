@@ -1,0 +1,63 @@
+/* Reset some default styles */
+body, h1, h2, p {
+    margin: 0;
+    padding: 0;
+}
+
+/* Remove underlines from links */
+a {
+    text-decoration: none;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.main-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.filter-container {
+    background-color: grey; /* Background color for filter container */
+    color: white; /* Text color for filter container */
+    width: 28%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+
+.posts-container {
+    background-color: #f0f0f0; /* Light grey background for posts container */
+    color: black;
+    width: 70%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Style the posts as blocks */
+.post-box {
+    background-color: grey; /* Dark grey background for post blocks */
+    color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+/* Style your buttons and other elements as needed */
+.btn {
+    background-color: grey;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+.post-title{
+color:black;
+}
+
+/* Add any additional styles you need */

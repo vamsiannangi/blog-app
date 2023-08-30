@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Comment Update Form</title>
+
+</head>
+<body>
+
+<form th:action="@{/comments/update}" method="post">
+    <input type="hidden" name="commentId" th:value="${comment.id}" />
+    <div class="form-group">
+        <label for="updatedText">Updated Comment:</label>
+        <textarea id="updatedText" name="updatedText" class="form-control" rows="3" required th:text="${comment.comment}"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Comment</button>
+</form>
+
+</body>
+</html>

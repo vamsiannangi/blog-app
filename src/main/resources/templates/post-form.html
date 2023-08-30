@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Blog Post</title>
+</head>
+<body>
+<div class="container">
+    <h2>Edit Blog Post</h2>
+    <form th:action="@{/save}" th:object="${post}" method="post">
+                        <input type="hidden" th:field="*{user}">
+
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{createdAt}">
+
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" th:field="*{title}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label>Excerpt</label>
+            <input type="text" th:field="*{excerpt}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label>Content</label>
+            <textarea th:field="*{content}" class="form-control" rows="5" required></textarea>
+        </div>
+
+        <div class="mb-3">-->
+                                <label for="tagsInput" class="form-label">Tags (comma-separated)</label>
+                                <input type="text" id="tagsInput" th:value="${tagsInput}"  name="tagsInput" class="form-control">
+
+                            </div>
+
+        <div class="form-group">
+            <button type="submit" name="action" value="Published" class="btn btn-primary">Publish</button>
+            <button type="submit" name="action" value="Save as Draft" class="btn btn-secondary">Save as Draft</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

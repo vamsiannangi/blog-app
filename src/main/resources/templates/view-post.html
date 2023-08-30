@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<head>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          background-color: #f0f0f0;
+      }
+
+      .filter-container {
+          flex: 1;
+          padding: 20px;
+          background-color: #333;
+          color: #fff;
+          height: 100vh;
+          position: relative;
+      }
+
+      .filter-container h3 {
+          margin-top: 0;
+      }
+
+      .filter-container label {
+          display: block;
+          margin: 10px 0;
+      }
+
+      /* Style for inputs and checkboxes */
+      .filter-container input[type="text"],
+      .filter-container input[type="checkbox"] {
+          width: 100%;
+          padding: 5px;
+          margin-top: 5px;
+          border: 1px solid #ccc;
+          background-color: #fff;
+          color: #333;
+      }
+
+      .post-container {
+          flex: 2;
+          padding: 20px;
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          background-color: #fff;
+      }
+
+      .post-card {
+          width: calc(50% - 20px);
+          margin: 10px;
+          padding: 20px;
+          background-color: #f4f4f4;
+          border: 1px solid #ddd;
+          color: #333;
+      }
+
+      .pagination-container {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 20px;
+      }
+
+      .pagination-item {
+          margin: 0 10px;
+      }
+
+      .header {
+          text-align: center;
+          padding: 20px 0;
+          background-color: #f0f0f0;
+      }
+
+      .header a {
+          margin: 0 10px;
+          text-decoration: none;
+          color: #333;
+          font-weight: bold;
+      }
+
+      .header a:hover {
+          color: #007bff;
+      }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Post Details</h2>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <h3>Title:</h3>
+                <p th:text="${post.title}"></p>
+            </div>
+
+            <div class="mb-3">
+                <h3>Excerpt:</h3>
+                <p th:text="${post.excerpt}"></p>
+            </div>
+
+            <div class="mb-3">
+                <h3>Content:</h3>
+                <p th:text="${post.content}"></p>
+            </div>
+            <div class="mb-3">
+                <div class="mb-3">
+                    <h3>Tags:</h3>
+                    <ul>
+                        <li th:each="tag : ${post.tags}" class="badge badge-secondary mr-2">
+                            <span th:text="${tag.name}"></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mb-3">
+                    <h3>Comments:</h3>
+                    <ul>
+                        <li th:each="comment : ${post.comments}">
+                            <div>
+                                <h5>Name: <span th:text="${comment.name}"></span></h5>
+                                <p>Comment: <span th:text="${comment.comment}"></span></p>
+                                <a th:href="@{/comments/showFormForUpdate(commentId=${comment.id})}" class="btn btn-primary btn-sm">Update Comment</a>
+
+                                <form th:action="@{/comments/delete}" method="post"
+                                      onsubmit="return confirm('Are you sure you want to delete this comment?');">
+                                    <input type="hidden" name="commentId" th:value="${comment.id}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete Comment</button>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mb-3">
+                    <h3>Add Comment:</h3>
+                    <form th:action="@{/comments/save}" method="post">
+                        <input type="hidden" name="postId" th:value="${post.id}">
+                        <div class="mb-3">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comment">Comment:</label>
+                            <textarea id="comment" name="comments" class="form-control form-control-sm" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Comment</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div sec:authorize="hasRole('ROLE_author')">
+        <a th:if="${post.user.name == #authentication.principal.username}" th:href="@{/showFormForUpdate(postId=${post.id})}" class="btn btn-info btn-sm">Update</a>
+        <a th:if="${post.user.name == #authentication.principal.username}" th:href="@{/delete(postId=${post.id})}" class="btn btn-danger btn-sm"
+           onclick="return confirm('Are you sure to delete?')">Delete</a>
+    </div>
+
+    <div class="container mt-3">
+        <a th:href="@{/}" class="btn btn-secondary">Back to Home</a>
+    </div>
+</div>
+</body>
+
+</html>
