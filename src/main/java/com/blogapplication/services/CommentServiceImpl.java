@@ -16,10 +16,6 @@ public class CommentServiceImpl implements CommentService {
         this.commentRepository = commentRepository;
     }
 
-    @Override
-    public List<Comments> findAll() {
-        return commentRepository.findAll();
-    }
 
     @Override
     public Comments findById(int theId) {
@@ -44,8 +40,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteById(int theId) {
-        commentRepository.deleteById(theId);
+    public void deleteById(int id) {
+        commentRepository.deleteById(id);
     }
 
     @Override

@@ -23,19 +23,20 @@
     </p><br>
 </span>
     <hr>
-    <ur>
+    <span sec:authorize="isAnonymous()">
+    <ul>
         <li><a th:href="@{/registrationForm}" >Register</a></li>
         <li><a th:href="@{/showMyLoginPage}" >Login</a></li>
+    </ul>
+            <hr>
 
-    </ur>
-<hr>
+</span>
 
+    <div sec:authorize="hasAnyRole('author')">
 
-        <div sec:authorize="hasAnyRole('author')">
-
-    <a th:href="@{/showFormForAdd}" class="btn btn-primary btn-sm mb-3">Add Post</a>
-    <a th:href="@{/draftPost}" class="btn btn-primary btn-sm mb-3">Draft Post</a>
-        </div>
+        <a th:href="@{/showFormForAdd}" class="btn btn-primary btn-sm mb-3">Add Post</a>
+        <a th:href="@{/draftPost}" class="btn btn-primary btn-sm mb-3">Draft Post</a>
+    </div>
     <div class="container main-container">
         <div class="sidebar" style="background:grey">
             <form th:action="@{/}" method="get">
@@ -54,16 +55,20 @@
                             <label th:text="${tag}"></label>
                         </div>
                     </div>
+
                     <div>
-                        <h2>Published Date :</h2>
-                        <input type="datetime-local" th:value="${startDate}" name="startDate">
-                        <input type="datetime-local" th:value="${endDate}" name="endDate">
+                        <div>
+                            <h2>Published Date :</h2>
+                            <input type="datetime-local" th:value="${startDate}" name="startDate">
+                            <input type="datetime-local" th:value="${endDate}" name="endDate">
+                        </div>
                     </div>
+                    <input type="hidden" name="search" th:value="${searchParam}">
+                    <input type="submit" value="Apply Filters">
                 </div>
-                <input type="hidden" name="search" th:value="${searchParam}">
-                <input type="submit" value="Apply Filters">
             </form>
         </div>
+
         <div class="posts-container">
             <form th:action="@{/}" method="get">
                 <input type="search" name="search" placeholder="Search posts..." th:value="${searchParam}">
@@ -76,11 +81,18 @@
                 </select>
                 <button type="submit">Sort</button>
             </form>
-            <div th:each="post : ${postsPage.content}" class="post-box">
-                <h2 class="post-title"><a style="color:black;" th:href="@{/showPost(postId=${post.id})}" th:text="${post.title}"></a></h2>
-                <p class="post-excerpt" th:text="${post.excerpt}"></p>
-                <p class="post-author">Author: <span th:text="${post.author}"></span></p>
-                <p class="post-publishedAt">Published At: <span th:text="${post.publishedAt}"></span></p>
+            <div th:each="post : ${postsPage.content}" class="postblock">
+                <h2 ><a style="color:black;" th:href="@{/showPost(postId=${post.id})}" th:text="${post.title}"></a></h2>
+                <p th:text="${post.excerpt}"></p>
+                <p>Author: <span th:text="${post.author}"></span></p>
+                <p>
+                    Tags:
+                    <span th:each="tag, tagIndex : ${post.tags}">
+            <span th:text="${tag.name}"></span>
+            <span th:if="${!tagIndex.last}">, </span>
+        </span>
+                    <span th:if="${post.tags.isEmpty()}">*</span>
+                </p>                <p>Published At: <span th:text="${post.publishedAt}"></span></p>
             </div>
 
             <div class="pagination">
@@ -88,7 +100,7 @@
                     <a th:href="@{/(page=${postsPage.number - 1}, size=${postsPage.size},search=${searchParam},sort=${sortParam},author=${selectedAuthors},tag=${selectedTags},startDate=${startDate},endDate=${endDate})}">Previous</a> <br>
                 </span>
                 <span th:unless="${postsPage.last}">
-                    <a th:href="@{/(page=${postsPage.number + 1}, size=${postsPage.size},search=${searchParam},sort=${sortParam},author=${selectedAuthors},tag=${selectedTags},startDate=${startDate},endDate=${endDate})}" sytle="padding-left:40%;">Next</a>
+                    <a th:href="@{/(page=${postsPage.number + 1}, size=${postsPage.size},search=${searchParam},sort=${sortParam},author=${selectedAuthors},tag=${selectedTags},startDate=${startDate},endDate=${endDate})}">Next</a>
                 </span>
             </div>
         </div>
@@ -102,7 +114,7 @@
     <hr>
 </div>
 <div class="container mt-3">
-    <a th:href="@{/}" class="btn btn-secondary">Back to Home</a>
+    <a th:href="@{/}" class="button">Back to Home</a>
 </div>
 </body>
 

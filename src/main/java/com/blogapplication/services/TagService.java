@@ -12,6 +12,5 @@ public interface TagService {
     Tag findById(Long theId);
     void save(Tag tag);
     void deleteById(Long theId);
-
     Tag findOrCreateTag(String s);
 }

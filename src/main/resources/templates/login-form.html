@@ -8,12 +8,12 @@
 <he>Login Page</he>
 
 <form action="#" th:action="@{/authenticateTheUser}" method="post">
-<!--    <div th:if="${param.logout}">-->
-<!--        <i>You have been logged out</i>-->
-<!--    </div>-->
-<!--    <div th:if="${param.error}">-->
-<!--        <i>Sorry! invalid username/password</i>-->
-<!--    </div>-->
+    <div th:if="${param.logout}">
+        <i>You have been logged out</i>
+    </div>
+    <div th:if="${param.error}">
+        <i>Sorry! invalid username/password</i>
+    </div>
 
     <p>
         Username:<input type="text" name="username" />

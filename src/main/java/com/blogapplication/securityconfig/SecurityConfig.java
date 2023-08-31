@@ -11,8 +11,6 @@ import javax.sql.DataSource;
 
 @Configuration
 public class SecurityConfig {
-
-
     @Bean
     public UserDetailsManager userDetailsManager(DataSource dataSource){
         JdbcUserDetailsManager jdbcUserDetailsManager=new JdbcUserDetailsManager(dataSource);
@@ -23,20 +21,14 @@ public class SecurityConfig {
         return jdbcUserDetailsManager;
     }
 
-
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(configurer ->
                         configurer
-//                                .requestMatchers("/listOfPosts").permitAll()
-//                                .requestMatchers("/comments/save").permitAll()
                                 .requestMatchers("/").permitAll()
                                 .requestMatchers("/showFormForAdd").hasRole("author")
                                 .requestMatchers("/draftPost").hasRole("author")
                                 .requestMatchers("/save").hasRole("author")
-
-//                                .requestMatchers("/draftPost").hasAnyRole("author","admin")
                                 .requestMatchers("/delete").hasRole("author")
                                 .requestMatchers("/showFormForUpdate").hasRole("author")
 

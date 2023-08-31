@@ -37,16 +37,13 @@ public class LoginController {
     public String registerNewUser(@ModelAttribute User user, Model model) {
         Optional<User> userOptional = userService.findByEmail(user.getEmail());
         if (userOptional.isPresent()) {
-            System.out.println(userService.findByEmail(user.getEmail()));
-//        System.out.println("hello");
+           userService.findByEmail(user.getEmail());
         model.addAttribute("error", "This email is already exists");
         model.addAttribute("user", user);
         return "register-form";
-
-}
+        }
         user.setPassword("{noop}"+user.getPassword());
         user.setRole("ROLE_author");
-
         userService.save(user);
         return "redirect:/";
     }

@@ -47,10 +47,8 @@ public class PostController {
             Model model) {
         Set<String> authors = getSelectedValues(selectedAuthors);
         Set<String> tags = getSelectedValues(selectedTags);
-
-        List<String> allAuthors = postService.getAllAuthors();
-        List<String> allTags = postService.getAllTags();
-
+        Set<String> allAuthors = postService.getAllAuthors();
+        Set<String> allTags = postService.getAllTags();
         Pageable pageable = createPageable(page, size, sortParam);
         Page<Post> postsPage = getFilteredOrSearchedPosts(authors, tags, startDate, endDate, searchParam, pageable);
         addModelAttributes(model, postsPage, authors, tags, searchParam, sortParam, allAuthors, allTags, startDate, endDate);
@@ -68,15 +66,30 @@ public class PostController {
     }
 
     private Page<Post> getFilteredOrSearchedPosts(Set<String> authors, Set<String> tags, LocalDateTime startDate, LocalDateTime endDate, String searchParam, Pageable pageable) {
-        if (!authors.isEmpty() || !tags.isEmpty() || startDate != null || endDate != null) {
-            return postService.filterPostsByAuthorsAndTags(authors, tags, startDate, endDate, pageable);
-        } else if (searchParam != null) {
-            return postService.searchPosts(searchParam, pageable);
+        if (searchParam != null)
+        {
+            if (!authors.isEmpty()) {
+                return postService.authorFilterOnSearch(searchParam, authors, pageable);
+            } else if (!tags.isEmpty()) {
+                return postService.tagsFilterOnSearch(searchParam, tags, pageable);
+            }
+            else {
+                return postService.searchPosts(searchParam, pageable);
+            }
+        }
+        else if (!authors.isEmpty() && !tags.isEmpty()) {
+            return postService.filterPostsByAuthorsAndTags(authors,tags,pageable);
+        }else if (!authors.isEmpty() && (startDate != null && endDate != null)) {
+            return postService.filterPostsByAuthorsAndDates(authors, startDate, endDate,pageable);
+        }else if (!tags.isEmpty() && (startDate != null && endDate != null)) {
+            return postService.filterPostsByTagsAndDates(tags, startDate, endDate,pageable);
+        }else if (!authors.isEmpty() || !tags.isEmpty() || (startDate != null && endDate != null)) {
+            return postService.filterPostsByAuthorsOrTagsOrDates(authors, tags, startDate, endDate, pageable);
         }
         return postService.findPublishedPosts(pageable);
     }
 
-    private void addModelAttributes(Model model, Page<Post> postsPage, Set<String> authors, Set<String> tags, String searchParam, String sortParam, List<String> allAuthors, List<String> allTags, LocalDateTime startDate, LocalDateTime endDate) {
+    private void addModelAttributes(Model model, Page<Post> postsPage, Set<String> authors, Set<String> tags, String searchParam, String sortParam, Set<String> allAuthors, Set<String> allTags, LocalDateTime startDate, LocalDateTime endDate) {
         model.addAttribute("postsPage", postsPage);
         model.addAttribute("selectedAuthors", authors);
         model.addAttribute("selectedTags", tags);
@@ -105,6 +118,7 @@ public class PostController {
                            @RequestParam("action") String action) {
         String[] tagNames = tagsInput.split(",");
         Set<Tag> tagSet = new HashSet<>();
+
         for (String tagName : tagNames) {
             tagName = tagName.trim();
             if (!tagName.isEmpty()) {
@@ -119,17 +133,13 @@ public class PostController {
         } else if ("Save as Draft".equals(action)) {
             post.setPublished(false);
         }
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-
         User user = userService.findByName(username);
         post.setUser(user);
         post.setAuthor(user.getName());
         if (post.getId() != null) {
-
             Post existingPost = postService.findById(post.getId());
-
             existingPost.setTitle(post.getTitle());
             existingPost.setExcerpt(post.getExcerpt());
             existingPost.setContent(post.getContent());
@@ -141,33 +151,17 @@ public class PostController {
             post.setCreatedAt(LocalDateTime.now());
             postService.save(post);
         }
-
-//        if ("Published".equals(action)) {
-//            return "redirect:/";
-//        } else {
-//            return "home";
-//        }
         return "redirect:/";
     }
-
-//    @RequestMapping("/draftPost")
-//    public String draftPost(Model model) {
-//        List<Post> draftPost = postService.findAllDraftPost();
-//        model.addAttribute("posts", draftPost);
-//        return "draft_post";
-//    }
 
     @RequestMapping("/draftPost")
     public String draftPost(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName(); // Get the logged-in username
-
+        String username = authentication.getName();
         List<Post> draftPosts = postService.findAllDraftPostByUser(username);
         model.addAttribute("posts", draftPosts);
         return "draft_post";
     }
-
-
 
     @GetMapping("/showPost")
     public String showPost(@RequestParam("postId") Long postId, Model model) {
@@ -182,12 +176,14 @@ public class PostController {
         model.addAttribute("post", post);
         String currentTags = "";
         List<Tag> tags = post.getTags();
+
         for (int i = 0; i < tags.size(); i++) {
             if (i > 0) {
                 currentTags += ", ";
             }
             currentTags += tags.get(i).getName();
         }
+
         model.addAttribute("tagsInput", currentTags);
         return "post-form";
     }
@@ -199,12 +195,7 @@ public class PostController {
         return "redirect:/";
     }
 
-    @GetMapping("/search")
-    public String searching(@RequestParam("search") String searchParam, Model model, Pageable pageable) {
-        List<Post> posts = postService.Searching(searchParam, pageable);
-        model.addAttribute("posts", posts);
-        return "home";
-    }
+
 
     @GetMapping("/sortByParam")
     public String sortByParam(@RequestParam("sort") String searchParam, Model model, Pageable pageable) {

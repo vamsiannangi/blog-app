@@ -19,20 +19,6 @@ import java.util.Set;
 public interface PostRepository extends JpaRepository<Post,Integer> {
 
     Optional<Post> findById(Long theId);
-
-    @Query("SELECT DISTINCT p FROM Post p " +
-            "LEFT JOIN p.tags t " +
-            "WHERE p.title LIKE %:param% " +
-            "OR p.content LIKE %:param% " +
-            "OR p.author LIKE %:param% " +
-            "OR t.name LIKE %:param%")
-    List<Post> Searching(@Param("param") String query,Pageable pageable);
-
-//    @Query("SELECT p FROM Post p WHERE p.isPublished = true AND lower(p.title) LIKE lower(concat('%', :keyword, '%')) " +
-//            "OR lower(p.content) LIKE lower(concat('%', :keyword, '%'))"+
-//            "OR lower(p.author) LIKE lower(concat('%', :keyword, '%'))")
-//    Page<Post> searchPosts(@Param("keyword") String keyword, Pageable pageable);
-
     @Query("SELECT p FROM Post p WHERE p.isPublished = true AND (" +
             "LOWER(p.title) LIKE LOWER(concat('%', :keyword, '%')) " +
             "OR LOWER(p.content) LIKE LOWER(concat('%', :keyword, '%')) " +
@@ -48,15 +34,26 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
     List<Post> sortBy(@Param("param") String searchParam,Pageable pageable);
 
     @Query("SELECT DISTINCT p.author FROM Post p")
-    List<String> getAllAuthors();
+    Set<String> getAllAuthors();
 
     @Query("SELECT DISTINCT t.name FROM Tag t")
-    List<String> getAllTags();
+    Set<String> getAllTags();
 
     @Query("SELECT p FROM Post p WHERE p.isPublished = true AND (p.author IN :authors OR " +
             "EXISTS (SELECT t FROM p.tags t where t.name IN :tags) OR p.publishedAt BETWEEN :startDate AND :endDate)")
-    Page<Post> filterPostsByAuthorsAndTags(@Param("authors") Set<String> authors, @Param("tags") Set<String> tags,
-                                           @Param("startDate") LocalDateTime startDate , @Param("endDate") LocalDateTime endDate , Pageable pageable);
+    Page<Post> filterPostsByAuthorsOrTagsOrDates(@Param("authors") Set<String> authors, @Param("tags") Set<String> tags,
+                                                 @Param("startDate") LocalDateTime startDate , @Param("endDate") LocalDateTime endDate , Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.isPublished = true AND (p.author IN :authors AND " +
+            "EXISTS (SELECT t FROM p.tags t where t.name IN :tags) AND p.publishedAt BETWEEN :startDate AND :endDate)")
+    Page<Post> filterPostsByAuthorsTagsAndDates(@Param("authors") Set<String> authors, @Param("tags") Set<String> tags,
+                                                @Param("startDate") LocalDateTime startDate , @Param("endDate") LocalDateTime endDate , Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.isPublished = true AND (p.author IN :authors AND " +
+            "EXISTS (SELECT t FROM p.tags t where t.name IN :tags))")
+    Page<Post> filterPostsByAuthorsAndTags(@Param("authors") Set<String> authors, @Param("tags") Set<String> tags , Pageable pageable);
+
+
     @Query("SELECT p FROM Post p WHERE p.isPublished = false")
     List<Post> findAllDraftPost();
 
@@ -65,7 +62,7 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
     Page<Post> findPublishedPosts(Pageable pageable);
 
 
-    List<Post> findAllByUser_Name(String name); // Use the correct property name
+    List<Post> findAllByUser_Name(String name);
 
 
     List<Post> findAllByUser_NameAndAuthor(String username, String author);
@@ -73,5 +70,31 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
     @Query("SELECT p FROM Post p WHERE p.user = :user AND p.isPublished = false")
     List<Post> findAllDraftPostsByUser(@Param("user") User user);
 
+    @Query("SELECT p FROM Post p WHERE p.isPublished = true AND (p.author IN :authors AND " +
+            "p.publishedAt BETWEEN :startDate AND :endDate)")
+    Page<Post> filterPostsByAuthorsAndDates(Set<String> authors, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
+    @Query("SELECT p FROM Post p WHERE p.isPublished = true AND (" +
+            "EXISTS (SELECT t FROM p.tags t where t.name IN :tags) AND p.publishedAt BETWEEN :startDate AND :endDate)")
+    Page<Post> filterPostsByTagsAndDates(Set<String> tags, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+
+
+
+    @Query("SELECT p FROM Post p WHERE p.isPublished = true AND (" +
+            "LOWER(p.title) LIKE LOWER(concat('%', :keyword, '%')) " +
+            "OR LOWER(p.content) LIKE LOWER(concat('%', :keyword, '%')) " +
+            "OR LOWER(p.author) LIKE LOWER(concat('%', :keyword, '%'))) AND p.author IN :authors")
+    Page<Post> authorFilterOnSearch(@Param("keyword") String keyword, Set<String> authors, Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.isPublished = true AND (" +
+            "LOWER(p.title) LIKE LOWER(concat('%', :keyword, '%')) " +
+            "OR LOWER(p.content) LIKE LOWER(concat('%', :keyword, '%')) " +
+            "OR LOWER(p.author) LIKE LOWER(concat('%', :keyword, '%'))) AND EXISTS (SELECT t FROM p.tags t where t.name IN :tags)")
+    Page<Post> tagsFilterOnSearch(@Param("keyword") String keyword, Set<String> tags, Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.isPublished = true AND (" +
+            "LOWER(p.title) LIKE LOWER(concat('%', :keyword, '%')) " +
+            "OR LOWER(p.content) LIKE LOWER(concat('%', :keyword, '%')) " +
+            "OR LOWER(p.author) LIKE LOWER(concat('%', :keyword, '%'))) AND p.publishedAt BETWEEN :startDate AND :endDate")
+    Page<Post> dateFilterOnSearch(@Param("keyword") String keyword, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 }

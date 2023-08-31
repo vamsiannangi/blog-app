@@ -17,23 +17,23 @@
             <label>Title</label>
             <input type="text" th:field="*{title}" class="form-control" required>
         </div>
-
+<br>
         <div class="form-group">
             <label>Excerpt</label>
             <input type="text" th:field="*{excerpt}" class="form-control" required>
         </div>
-
+<br>
         <div class="form-group">
             <label>Content</label>
             <textarea th:field="*{content}" class="form-control" rows="5" required></textarea>
         </div>
-
-        <div class="mb-3">-->
+<br>
+        <div class="mb-3">
                                 <label for="tagsInput" class="form-label">Tags (comma-separated)</label>
                                 <input type="text" id="tagsInput" th:value="${tagsInput}"  name="tagsInput" class="form-control">
 
                             </div>
-
+<br>
         <div class="form-group">
             <button type="submit" name="action" value="Published" class="btn btn-primary">Publish</button>
             <button type="submit" name="action" value="Save as Draft" class="btn btn-secondary">Save as Draft</button>

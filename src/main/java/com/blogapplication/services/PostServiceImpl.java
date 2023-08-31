@@ -13,18 +13,13 @@ import java.util.*;
 
 @Service
 public class PostServiceImpl implements PostService {
-    @Autowired
     private PostRepository postRepository;
-
-    @Autowired
     private UserService userService;
-
-
-    public PostServiceImpl(PostRepository postRepository) {
+    @Autowired
+    public PostServiceImpl(PostRepository postRepository, UserService userService) {
         this.postRepository = postRepository;
+        this.userService = userService;
     }
-
-
     @Override
     public List<Post> findAll() {
         return postRepository.findAll();
@@ -64,11 +59,6 @@ public class PostServiceImpl implements PostService {
         postRepository.deleteById(theId);
     }
 
-    @Override
-    public List<Post> Searching(String searchParam, Pageable pageable) {
-        List<Post> post = postRepository.Searching(searchParam,pageable);
-        return post ;
-    }
 
     @Override
     public List<Post> sortBy(String searchParam,Pageable pageable) {
@@ -91,19 +81,39 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<String> getAllAuthors() {
-        List<String> author = postRepository.getAllAuthors();
+    public Set<String> getAllAuthors() {
+        Set<String> author = postRepository.getAllAuthors();
         return author;
     }
 
     @Override
-    public List<String> getAllTags() {
-        List<String> tag = postRepository.getAllTags();
+    public Set<String> getAllTags() {
+        Set<String> tag = postRepository.getAllTags();
         return tag;
     }
     @Override
-    public Page<Post> filterPostsByAuthorsAndTags(Set<String> authors, Set<String> tags,LocalDateTime startDate,LocalDateTime endDate, Pageable pageable) {
-        return postRepository.filterPostsByAuthorsAndTags(authors, tags,startDate,endDate,pageable);
+    public Page<Post> filterPostsByAuthorsOrTagsOrDates(Set<String> authors, Set<String> tags,LocalDateTime startDate,LocalDateTime endDate, Pageable pageable) {
+        return postRepository.filterPostsByAuthorsOrTagsOrDates(authors, tags,startDate,endDate,pageable);
+    }
+
+    @Override
+    public Page<Post> authorFilterOnSearch(String searchParam, Set<String> authors, Pageable pageable) {
+        return postRepository.authorFilterOnSearch(searchParam,authors,pageable);
+    }
+
+    @Override
+    public Page<Post> tagsFilterOnSearch(String searchParam, Set<String> tags, Pageable pageable) {
+        return postRepository.tagsFilterOnSearch(searchParam,tags,pageable);
+    }
+
+    @Override
+    public Page<Post> dateFilterOnSearch(String searchParam,LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        return postRepository.dateFilterOnSearch(searchParam,startDate,endDate,pageable);
+    }
+
+    @Override
+    public Page<Post> filterPostsByAuthorsAndTags(Set<String> authors, Set<String> tags, Pageable pageable) {
+        return postRepository.filterPostsByAuthorsAndTags(authors,tags,pageable);
     }
 
     @Override
@@ -127,5 +137,23 @@ public class PostServiceImpl implements PostService {
         User user = userService.findByName(username);
         return postRepository.findAllDraftPostsByUser(user);
     }
+
+    @Override
+    public Page<Post> filterPostsByAuthorsTagsAndDates(Set<String> authors, Set<String> tags, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        return postRepository.filterPostsByAuthorsTagsAndDates(authors,tags,startDate,endDate,pageable);
+
+    }
+
+    @Override
+    public Page<Post> filterPostsByAuthorsAndDates(Set<String> authors, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        return postRepository.filterPostsByAuthorsAndDates(authors,startDate,endDate,pageable);
+    }
+
+    @Override
+    public Page<Post> filterPostsByTagsAndDates(Set<String> tags, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        return postRepository.filterPostsByTagsAndDates(tags,startDate,endDate,pageable);
+
+    }
+
 
 }

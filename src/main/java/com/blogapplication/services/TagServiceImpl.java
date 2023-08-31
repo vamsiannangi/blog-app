@@ -52,7 +52,6 @@ public class TagServiceImpl implements TagService{
     @Override
     public Tag findOrCreateTag(String tagName) {
         Optional<Tag> existingTag = tagRepository.findByName(tagName);
-
         if (existingTag.isPresent()) {
             return existingTag.get();
         } else {
