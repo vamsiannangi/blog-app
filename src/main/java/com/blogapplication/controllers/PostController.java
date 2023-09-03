@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -111,6 +112,7 @@ public class PostController {
     }
 
     @GetMapping("/showFormForAdd")
+    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_author')")
     public String showFormForAdd(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -123,6 +125,7 @@ public class PostController {
     }
 
     @PostMapping("/save")
+    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_author')")
     public String savePost(@ModelAttribute("post") Post post, @RequestParam("tagsInput") String tagsInput,
                            @RequestParam("action") String action) {
         String[] tagNames = tagsInput.split(",");
@@ -164,6 +167,7 @@ public class PostController {
     }
 
     @RequestMapping("/draftPost")
+    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_author')")
     public String draftPost(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -180,6 +184,7 @@ public class PostController {
     }
 
     @GetMapping("/showFormForUpdate")
+    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_author')")
     public String showFormForUpdate(@RequestParam("postId") Long theId, Model model) {
         Post post = postService.findById(theId);
         model.addAttribute("post", post);
@@ -199,6 +204,7 @@ public class PostController {
 
 
     @GetMapping("/delete")
+    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_author')")
     public String delete(@RequestParam("postId") Long theId) {
         postService.deleteById(Math.toIntExact(theId));
         return "redirect:/";

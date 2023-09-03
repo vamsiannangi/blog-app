@@ -82,7 +82,10 @@
         <a th:if="${post.user.name == #authentication.principal.username}" th:href="@{/delete(postId=${post.id})}"
            onclick="return confirm('Are you sure to delete?')">Delete</a>
     </div>
-
+    <div sec:authorize="hasRole('ROLE_admin')">
+        <a th:href="@{/showFormForUpdate(postId=${post.id})}">Update</a>
+        <a th:href="@{/delete(postId=${post.id})}" onclick="return confirm('Are you sure to delete?')">Delete</a>
+    </div>
     <div class="container mt-3">
         <a th:href="@{/}">Back to Home</a>
     </div>

@@ -6,6 +6,7 @@ import com.blogapplication.entity.Post;
 import com.blogapplication.services.CommentService;
 import com.blogapplication.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,7 @@ public class CommentController {
     }
 
     @GetMapping("/showFormForUpdate")
+    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_author')")
     public String showFormForUpdate(@RequestParam("commentId") Long commentId, Model model) {
         Comments comment = commentService.findById(commentId);
         model.addAttribute("comment", comment);
@@ -46,19 +48,21 @@ public class CommentController {
     }
 
     @PostMapping("/update")
+    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_author')")
     public String updateComment(@RequestParam("commentId") Long commentId,
                                 @RequestParam("updatedText") String updatedText) {
         Comments comment = commentService.findById(commentId);
         comment.setComments(updatedText);
         commentService.updateComment(comment);
-        return "redirect:/showPost?postId=" + comment.getPost().getId();
+        return "redirect:/showPost/{postId}";
     }
 
     @PostMapping("/delete")
+    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_author')")
     public String deleteComment(@RequestParam("commentId") Long commentId) {
         Comments comment = commentService.findById(commentId);
         Long postId = comment.getPost().getId();
         commentService.deleteById(commentId);
-        return "redirect:/posts/showPost?postId=" + postId;
+        return "redirect:/posts/showPost/{postId}";
     }
 }

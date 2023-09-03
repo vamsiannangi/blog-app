@@ -2,14 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Blog Post</title>
+    <title>Blog Post</title>
 </head>
 <body>
 <div class="container">
     <h2>Edit Blog Post</h2>
     <form th:action="@{/save}" th:object="${post}" method="post">
-                        <input type="hidden" th:field="*{user}">
-
+        <input type="hidden" th:field="*{user}">
         <input type="hidden" th:field="*{id}">
         <input type="hidden" th:field="*{createdAt}">
 

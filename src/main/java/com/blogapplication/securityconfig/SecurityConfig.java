@@ -22,15 +22,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                         configurer
                                 .requestMatchers("/").permitAll()
-                                .requestMatchers("/showFormForAdd").hasRole("author")
-                                .requestMatchers("/draftPost").hasRole("author")
-                                .requestMatchers("/save").hasRole("author")
-                                .requestMatchers("/delete").hasRole("author")
-                                .requestMatchers("/showFormForUpdate").hasRole("author")
+                                .requestMatchers("/showFormForAdd").hasAnyRole("author", "admin") // Allow author and admin
+                                .requestMatchers("/draftPost").hasAnyRole("author", "admin") // Allow author and admin
+                                .requestMatchers("/save").hasAnyRole("author", "admin") // Allow author and admin
+                                .requestMatchers("/delete").hasAnyRole("author", "admin") // Allow author and admin
+                                .requestMatchers("/showFormForUpdate").hasAnyRole("author", "admin") // Allow author and admin
 
                                 .anyRequest().permitAll())
                 .formLogin(form -> form
@@ -43,4 +43,5 @@ public class SecurityConfig {
                         configurer.accessDeniedPage("/access-denied"));
         return http.build();
     }
+
 }
