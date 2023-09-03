@@ -50,6 +50,9 @@ public class PostController {
         Set<String> allAuthors = postService.getAllAuthors();
         Set<String> allTags = postService.getAllTags();
         Pageable pageable = createPageable(page, size, sortParam);
+        if(searchParam !=null) {
+            searchParam = searchParam.trim();
+        }
         Page<Post> postsPage = getFilteredOrSearchedPosts(authors, tags, startDate, endDate, searchParam, pageable);
         addModelAttributes(model, postsPage, authors, tags, searchParam, sortParam, allAuthors, allTags, startDate, endDate);
 
@@ -66,26 +69,32 @@ public class PostController {
     }
 
     private Page<Post> getFilteredOrSearchedPosts(Set<String> authors, Set<String> tags, LocalDateTime startDate, LocalDateTime endDate, String searchParam, Pageable pageable) {
-        if (searchParam != null)
-        {
-            if (!authors.isEmpty()) {
-                return postService.authorFilterOnSearch(searchParam, authors, pageable);
-            } else if (!tags.isEmpty()) {
-                return postService.tagsFilterOnSearch(searchParam, tags, pageable);
-            }
-            else {
-                return postService.searchPosts(searchParam, pageable);
-            }
+        if (searchParam != null  && searchParam !="" && !authors.isEmpty()) {
+            return postService.authorFilterOnSearch(searchParam, authors,pageable);
+        } else if (searchParam != null && searchParam !=""  && !tags.isEmpty()) {
+            return postService.tagsFilterOnSearch(searchParam, tags,pageable);
+        }else if (searchParam != null && searchParam !=""  && (startDate != null && endDate != null)) {
+            return postService.dateFilterOnSearch(searchParam,startDate, endDate,pageable);
+        }
+        if(!authors.isEmpty() && !tags.isEmpty() && (startDate != null && endDate != null)){
+            return postService.filterPostsByAuthorsTagsAndDates(authors, tags, startDate, endDate, pageable);
         }
         else if (!authors.isEmpty() && !tags.isEmpty()) {
             return postService.filterPostsByAuthorsAndTags(authors,tags,pageable);
-        }else if (!authors.isEmpty() && (startDate != null && endDate != null)) {
+        }
+        else if (!authors.isEmpty() && (startDate != null && endDate != null)) {
             return postService.filterPostsByAuthorsAndDates(authors, startDate, endDate,pageable);
-        }else if (!tags.isEmpty() && (startDate != null && endDate != null)) {
+        }
+        else if (!tags.isEmpty() && (startDate != null && endDate != null)) {
             return postService.filterPostsByTagsAndDates(tags, startDate, endDate,pageable);
-        }else if (!authors.isEmpty() || !tags.isEmpty() || (startDate != null && endDate != null)) {
+        }
+        else if (!authors.isEmpty() || !tags.isEmpty() || (startDate != null && endDate != null)) {
             return postService.filterPostsByAuthorsOrTagsOrDates(authors, tags, startDate, endDate, pageable);
         }
+        else if (searchParam != null) {
+            return postService.searchPosts(searchParam, pageable);
+        }
+
         return postService.findPublishedPosts(pageable);
     }
 

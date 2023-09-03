@@ -22,7 +22,8 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
     @Query("SELECT p FROM Post p WHERE p.isPublished = true AND (" +
             "LOWER(p.title) LIKE LOWER(concat('%', :keyword, '%')) " +
             "OR LOWER(p.content) LIKE LOWER(concat('%', :keyword, '%')) " +
-            "OR LOWER(p.author) LIKE LOWER(concat('%', :keyword, '%')))")
+            "OR LOWER(p.author) LIKE LOWER(concat('%', :keyword, '%')) " +
+            "OR EXISTS (SELECT t FROM p.tags t WHERE LOWER(t.name) LIKE LOWER(concat('%', :keyword, '%'))))")
     Page<Post> searchPosts(@Param("keyword") String keyword, Pageable pageable);
 
     List<Post> findAllSortedBy(String sortParam, Sort sort);
@@ -83,18 +84,21 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
     @Query("SELECT p FROM Post p WHERE p.isPublished = true AND (" +
             "LOWER(p.title) LIKE LOWER(concat('%', :keyword, '%')) " +
             "OR LOWER(p.content) LIKE LOWER(concat('%', :keyword, '%')) " +
-            "OR LOWER(p.author) LIKE LOWER(concat('%', :keyword, '%'))) AND p.author IN :authors")
+            "OR LOWER(p.author) LIKE LOWER(concat('%', :keyword, '%'))" +
+            "OR EXISTS (SELECT t FROM p.tags t WHERE LOWER(t.name) LIKE LOWER(concat('%', :keyword, '%')))) AND p.author IN :authors")
     Page<Post> authorFilterOnSearch(@Param("keyword") String keyword, Set<String> authors, Pageable pageable);
 
     @Query("SELECT p FROM Post p WHERE p.isPublished = true AND (" +
             "LOWER(p.title) LIKE LOWER(concat('%', :keyword, '%')) " +
             "OR LOWER(p.content) LIKE LOWER(concat('%', :keyword, '%')) " +
-            "OR LOWER(p.author) LIKE LOWER(concat('%', :keyword, '%'))) AND EXISTS (SELECT t FROM p.tags t where t.name IN :tags)")
+            "OR LOWER(p.author) LIKE LOWER(concat('%', :keyword, '%'))" +
+            "OR EXISTS (SELECT t FROM p.tags t WHERE LOWER(t.name) LIKE LOWER(concat('%', :keyword, '%')))) AND EXISTS (SELECT t FROM p.tags t where t.name IN :tags)")
     Page<Post> tagsFilterOnSearch(@Param("keyword") String keyword, Set<String> tags, Pageable pageable);
 
     @Query("SELECT p FROM Post p WHERE p.isPublished = true AND (" +
             "LOWER(p.title) LIKE LOWER(concat('%', :keyword, '%')) " +
             "OR LOWER(p.content) LIKE LOWER(concat('%', :keyword, '%')) " +
-            "OR LOWER(p.author) LIKE LOWER(concat('%', :keyword, '%'))) AND p.publishedAt BETWEEN :startDate AND :endDate")
+            "OR LOWER(p.author) LIKE LOWER(concat('%', :keyword, '%'))" +
+            "OR EXISTS (SELECT t FROM p.tags t WHERE LOWER(t.name) LIKE LOWER(concat('%', :keyword, '%')))) AND p.publishedAt BETWEEN :startDate AND :endDate")
     Page<Post> dateFilterOnSearch(@Param("keyword") String keyword, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 }
