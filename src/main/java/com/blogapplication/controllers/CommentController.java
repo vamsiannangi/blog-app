@@ -54,7 +54,7 @@ public class CommentController {
         Comments comment = commentService.findById(commentId);
         comment.setComments(updatedText);
         commentService.updateComment(comment);
-        return "redirect:/showPost/{postId}";
+        return "redirect:/showPost?postId=" + comment.getPost().getId();
     }
 
     @PostMapping("/delete")
@@ -63,6 +63,6 @@ public class CommentController {
         Comments comment = commentService.findById(commentId);
         Long postId = comment.getPost().getId();
         commentService.deleteById(commentId);
-        return "redirect:/posts/showPost/{postId}";
+        return "redirect:/showPost?postId=" + postId;
     }
 }

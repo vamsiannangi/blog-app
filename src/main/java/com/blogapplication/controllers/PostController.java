@@ -209,9 +209,6 @@ public class PostController {
         postService.deleteById(Math.toIntExact(theId));
         return "redirect:/";
     }
-
-
-
     @GetMapping("/sortByParam")
     public String sortByParam(@RequestParam("sort") String searchParam, Model model, Pageable pageable) {
         List<Post> posts = postService.sortBy(searchParam, pageable);
